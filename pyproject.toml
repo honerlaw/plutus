@@ -42,6 +42,7 @@ ignore = [
     "COM812",
     "ANN401",
     "FIX002", "TD002", "TD003",
+    "PLC0415",  # deferred imports in broker.py and cli.py are intentional (avoid lumibot at startup)
 ]
 
 [tool.ruff.lint.per-file-ignores]
