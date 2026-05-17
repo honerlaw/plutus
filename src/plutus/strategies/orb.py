@@ -18,7 +18,6 @@ from datetime import UTC, date, datetime, time, timedelta
 from typing import TYPE_CHECKING
 
 from plutus.strategies.base import ProposedSignal
-from plutus.strategies.registry import register
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -153,21 +152,6 @@ def _emit_short_entry(  # noqa: PLR0913
     state.entered_today[symbol] = True
     state.open_position[symbol] = sig
     return [sig]
-
-
-@register("orb")
-class _OrbRegistrationMarker:
-    """Placeholder so the registry knows ORB exists.
-
-    The lumibot adapter (Task 14) will replace this with a real Strategy
-    subclass that calls compute_orb_signals.
-    """
-
-    def __init__(self, **kwargs: float) -> None:
-        self.cfg = OrbConfig(
-            opening_range_minutes=int(kwargs.get("opening_range_minutes", 15)),
-            risk_per_trade=float(kwargs.get("risk_per_trade", 0.005)),
-        )
 
 
 def compute_orb_signals(  # noqa: PLR0913, PLR0911

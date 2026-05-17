@@ -24,4 +24,5 @@ with warnings.catch_warnings():
         category=DeprecationWarning,
     )
     # Pre-import so subsequent imports hit sys.modules cache (no re-warning).
-    import lumibot.brokers  # noqa: F401 — side-effect import to warm module cache
+    import lumibot.brokers
+    import lumibot.strategies  # noqa: F401 — pre-warm strategies so adapter.py import is clean

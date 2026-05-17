@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 
 from plutus.strategies.base import ProposedSignal
 from plutus.strategies.indicators import atr, rsi, vwap
-from plutus.strategies.registry import register
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -36,21 +35,6 @@ class RsiVwapState:
 
     open_position_side: dict[str, str] = field(default_factory=dict)  # symbol -> "buy"/"sell"
     open_position_qty: dict[str, float] = field(default_factory=dict)
-
-
-@register("rsi_vwap")
-class _RsiVwapMarker:
-    """Registration marker; runner replaces with lumibot adapter (Task 14)."""
-
-    def __init__(self, **kwargs: float) -> None:
-        self.cfg = RsiVwapConfig(
-            rsi_period=int(kwargs.get("rsi_period", 14)),
-            rsi_long_threshold=float(kwargs.get("rsi_long_threshold", 30.0)),
-            rsi_short_threshold=float(kwargs.get("rsi_short_threshold", 70.0)),
-            atr_period=int(kwargs.get("atr_period", 14)),
-            atr_multiplier=float(kwargs.get("atr_multiplier", 1.5)),
-            risk_per_trade=float(kwargs.get("risk_per_trade", 0.005)),
-        )
 
 
 def _exit_long(

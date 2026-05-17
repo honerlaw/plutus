@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 
 from plutus.strategies.base import ProposedSignal
 from plutus.strategies.indicators import atr, donchian
-from plutus.strategies.registry import register
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -36,20 +35,6 @@ class DonchianState:
     entry_bar_index: dict[str, int] = field(default_factory=dict)
     trailing_stop: dict[str, float] = field(default_factory=dict)
     bar_count: dict[str, int] = field(default_factory=dict)
-
-
-@register("donchian_swing")
-class _DonchianMarker:
-    """Registration marker; runner replaces with lumibot adapter (Task 14)."""
-
-    def __init__(self, **kwargs: float) -> None:
-        self.cfg = DonchianConfig(
-            channel_period=int(kwargs.get("channel_period", 20)),
-            atr_period=int(kwargs.get("atr_period", 14)),
-            atr_multiplier=float(kwargs.get("atr_multiplier", 2.0)),
-            max_hold_bars=int(kwargs.get("max_hold_bars", 35)),
-            risk_per_trade=float(kwargs.get("risk_per_trade", 0.005)),
-        )
 
 
 def _close_position(
