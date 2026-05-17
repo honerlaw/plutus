@@ -26,3 +26,18 @@
 ## Layout
 
 See `docs/superpowers/specs/2026-05-17-plutus-trading-lab-design.md` for the architecture.
+
+## Running the lab
+
+~~~bash
+uv sync
+cp .env.example .env  # fill in ALPACA_API_KEY / ALPACA_API_SECRET
+uv run plutus list                                 # see registered strategies
+uv run plutus run                                  # start the paper trader (blocks)
+uv run plutus backtest --strategy orb \
+  --start 2026-01-01 --end 2026-04-30              # backtest one strategy
+uv run plutus signals                              # see last 7 days of signals
+uv run plutus report                               # per-strategy summary
+~~~
+
+DB lives at `./data/plutus.db` by default.
