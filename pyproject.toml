@@ -63,3 +63,9 @@ division-by-zero = "error"
 [tool.pytest.ini_options]
 addopts = "-W error -ra --cov=plutus --cov-fail-under=85"
 testpaths = ["tests"]
+filterwarnings = [
+    # websockets 14 deprecates the legacy sub-package; triggered by alpaca-py at import time.
+    "ignore:websockets.legacy is deprecated:DeprecationWarning",
+    # pandas 2.x removes 'future.no_silent_downcasting'; triggered by lumibot at import time.
+    "ignore:.*no_silent_downcasting.*:DeprecationWarning",
+]
