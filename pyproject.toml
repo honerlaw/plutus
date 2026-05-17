@@ -20,8 +20,8 @@ plutus = "plutus.cli:app"
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
     "ruff>=0.7",
     "ty>=0.0.1a4",
     "pytest>=8.3",
@@ -50,9 +50,15 @@ ignore = [
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
-[tool.ty]
-strict = true
-src = ["src", "tests"]
+[tool.ty.environment]
+# Root source tree for first-party imports; tests resolved via extra-paths
+root = ["src"]
+extra-paths = ["tests"]
+
+[tool.ty.rules]
+# ty 0.0.37 has no single "strict" knob; elevate opt-in rules to error here.
+# Rules that are error by default are already enforced without explicit config.
+division-by-zero = "error"
 
 [tool.pytest.ini_options]
 addopts = "-W error -ra --cov=plutus --cov-fail-under=85"
