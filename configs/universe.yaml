@@ -1,0 +1,21 @@
+symbols: [SPY, QQQ, AAPL, MSFT, NVDA, TSLA, AMD, META]
+strategies:
+  orb:
+    enabled: true
+    risk_per_trade: 0.005
+    opening_range_minutes: 15
+  rsi_vwap:
+    enabled: true
+    risk_per_trade: 0.005
+    rsi_period: 14
+    rsi_long_threshold: 30
+    rsi_short_threshold: 70
+    atr_period: 14
+    atr_multiplier: 1.5
+  donchian_swing:
+    enabled: true
+    risk_per_trade: 0.005
+    channel_period: 20
+    atr_period: 14
+    atr_multiplier: 2.0
+    max_hold_bars: 35
