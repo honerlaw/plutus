@@ -1,7 +1,7 @@
 # 001-cli-to-web-postgres
 
 ## Status
-Draft
+Shipped (2026-06-13)
 
 ## Goal
 Convert Plutus from a CLI/SQLite local application to a minimal FastAPI web app backed by PostgreSQL, deployable on Digital Ocean App Platform with secrets managed by Doppler.
@@ -28,6 +28,13 @@ FastAPI service + DO App Platform worker. Doppler injects all env vars at runtim
 7. `.do/app.yaml` — service (uvicorn, port 8080, HTTP health check on `/health`) + worker (long-running runner, restart-on-failure); Doppler as env source for `PLUTUS_DB_URL`, `ALPACA_API_KEY`, `ALPACA_API_SECRET`
 8. `CLAUDE.md` / `README.md` — update quickstart to `doppler run -- uv run ...`; document `doppler` as required dev tool; add manual `export PLUTUS_DB_URL=postgresql://...` fallback for devs without Doppler
 9. Tests — update existing config tests (no `db_path`); add `tests/test_web.py` using `httpx.TestClient` + `app.dependency_overrides[get_session]` with SQLite in-memory; note: SQLite tests do not cover PostgreSQL-specific behavior
+
+**Implementation notes (as shipped):**
+- `BaseHTTPMiddleware` clears contextvars before each bind to prevent bleed across requests
+- DB password scrubbed from startup log via `make_url(...).render_as_string(hide_password=True)`
+- Health check catches `SQLAlchemyError`, not bare `Exception`
+- `.do/app.yaml` uses `uv sync --no-dev` to exclude dev deps from production image
+- `PLUTUS_DB_URL` must use `postgresql+psycopg://` scheme for psycopg3 routing; documented in README
 
 **Explicit non-decisions:**
 - Existing SQLite data is not migrated; production starts fresh on PostgreSQL (paper trading lab)
