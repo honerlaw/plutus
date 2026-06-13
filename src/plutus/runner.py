@@ -38,7 +38,7 @@ def build_runner(*, universe_path: Path) -> RunnerBundle:
     """Construct the lumibot Trader and attach all enabled plutus strategies."""
     settings = Settings()
     configure_logging(settings.log_level)
-    engine = init_db(settings.db_path)
+    engine = init_db(settings.database_url)
     broker = make_paper_broker(settings)
     trader = Trader()
 

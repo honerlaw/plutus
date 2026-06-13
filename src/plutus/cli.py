@@ -65,7 +65,7 @@ def cmd_signals(
 ) -> None:
     """Print recent signals from the DB."""
     settings = Settings()
-    engine = init_db(settings.db_path)
+    engine = init_db(settings.database_url)
     try:
         cutoff = since or (datetime.now(UTC) - timedelta(days=7))
         with Session(engine) as s:
@@ -99,7 +99,7 @@ def cmd_report(
 ) -> None:
     """Per-strategy summary."""
     settings = Settings()
-    engine = init_db(settings.db_path)
+    engine = init_db(settings.database_url)
     try:
         cutoff = since or (datetime.now(UTC) - timedelta(days=30))
         rows = build_summary(engine, since=cutoff)

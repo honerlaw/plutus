@@ -46,7 +46,7 @@ def run_backtest(
     """Execute one strategy backtest. Records its own Run row with mode=backtest."""
     settings = Settings()
     configure_logging(settings.log_level)
-    engine = init_db(settings.db_path)
+    engine = init_db(settings.database_url)
 
     try:
         universe = load_universe(universe_path)

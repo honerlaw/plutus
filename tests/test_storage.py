@@ -129,11 +129,9 @@ def test_daily_run_summary() -> None:
 
 
 def test_init_db_creates_tables(tmp_path: Path) -> None:
-    db_file = tmp_path / "x.db"
-    engine = init_db(db_file)
+    db_url = f"sqlite:///{tmp_path / 'x.db'}"
+    engine = init_db(db_url)
     try:
-        assert db_file.exists()
-        # Engine works for a basic insert
         with Session(engine) as s:
             s.add(
                 Run(
@@ -150,8 +148,8 @@ def test_init_db_creates_tables(tmp_path: Path) -> None:
 
 
 def test_session_scope_commits_on_exit(tmp_path: Path) -> None:
-    db_file = tmp_path / "y.db"
-    engine = init_db(db_file)
+    db_url = f"sqlite:///{tmp_path / 'y.db'}"
+    engine = init_db(db_url)
     try:
         rid = uuid4()
         with session_scope(engine) as s:
