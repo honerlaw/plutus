@@ -194,8 +194,12 @@ def test_health_returns_503_when_db_unreachable(
 ) -> None:
     from unittest.mock import MagicMock
 
+    from sqlalchemy.exc import OperationalError
+
     broken = MagicMock()
-    broken.connect.return_value.__enter__.side_effect = Exception("connection refused")
+    broken.connect.return_value.__enter__.side_effect = OperationalError(
+        "connection refused", None, Exception("connection refused")
+    )
     app.dependency_overrides[_get_engine] = lambda: broken
     try:
         response = client.get("/health")

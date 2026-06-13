@@ -7,12 +7,13 @@ from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, Annotated
 from uuid import uuid4
 
+import sqlalchemy.exc
 import structlog
 import structlog.contextvars
 from fastapi import Depends, FastAPI, HTTPException, Query
 from pydantic import BaseModel
 from sqlalchemy import text as sa_text
-from sqlalchemy.engine import Engine
+from sqlalchemy.engine import Engine, make_url
 from sqlmodel import Session, select
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
@@ -38,6 +39,7 @@ class _RequestIDMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         """Bind a unique request_id to structlog contextvars and clear after response."""
+        structlog.contextvars.clear_contextvars()
         structlog.contextvars.bind_contextvars(request_id=str(uuid4()))
         try:
             return await call_next(request)
@@ -52,7 +54,8 @@ async def _lifespan(_app: FastAPI) -> AsyncIterator[None]:
     settings = Settings()
     configure_logging(settings.log_level)
     _engine = init_db(settings.database_url)
-    _log.info("web.startup", database_url=settings.database_url)
+    safe_url = make_url(settings.database_url).render_as_string(hide_password=True)
+    _log.info("web.startup", database_url=safe_url)
     try:
         yield
     finally:
@@ -131,7 +134,7 @@ def health(engine: _EngineDep) -> HealthResponse:
         with engine.connect() as conn:
             conn.execute(sa_text("SELECT 1"))
         return HealthResponse(status="ok", db="ok")
-    except Exception as exc:
+    except sqlalchemy.exc.SQLAlchemyError as exc:
         _log.warning("web.health.db_error", error=str(exc))
         raise HTTPException(
             status_code=503,

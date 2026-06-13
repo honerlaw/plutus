@@ -7,7 +7,7 @@ services:
       repo: derekhonerlaw/plutus
       branch: main
       deploy_on_push: true
-    build_command: pip install uv && uv sync
+    build_command: pip install uv && uv sync --no-dev
     run_command: doppler run -- uvicorn plutus.web:app --host 0.0.0.0 --port 8080
     environment_slug: python
     instance_count: 1
@@ -26,7 +26,7 @@ workers:
       repo: derekhonerlaw/plutus
       branch: main
       deploy_on_push: true
-    build_command: pip install uv && uv sync
+    build_command: pip install uv && uv sync --no-dev
     run_command: doppler run -- uv run plutus run
     environment_slug: python
     instance_count: 1
