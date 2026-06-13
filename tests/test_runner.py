@@ -20,7 +20,7 @@ def test_build_runner_wires_enabled_strategies_to_trader(
     monkeypatch.setenv("ALPACA_API_KEY", "k")
     monkeypatch.setenv("ALPACA_API_SECRET", "s")
     monkeypatch.setenv("ALPACA_PAPER", "true")
-    monkeypatch.setenv("PLUTUS_DB_PATH", str(tmp_path / "db.sqlite"))
+    monkeypatch.setenv("PLUTUS_DB_URL", f"sqlite:///{tmp_path / 'db.sqlite'}")
 
     universe = tmp_path / "u.yaml"
     universe.write_text(

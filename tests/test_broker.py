@@ -12,6 +12,7 @@ def test_make_paper_broker_uses_paper_credentials(monkeypatch: pytest.MonkeyPatc
     monkeypatch.setenv("ALPACA_API_KEY", "k")
     monkeypatch.setenv("ALPACA_API_SECRET", "s")
     monkeypatch.setenv("ALPACA_PAPER", "true")
+    monkeypatch.setenv("PLUTUS_DB_URL", "sqlite:///:memory:")
     settings = Settings()
 
     mock_broker = MagicMock()

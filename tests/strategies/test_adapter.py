@@ -29,7 +29,7 @@ def _make_adapter(
     tmp_path: Path,
     **params: float,
 ) -> _PlutusAdapter:
-    engine = init_db(tmp_path / "a.db")
+    engine = init_db(f"sqlite:///{tmp_path / 'a.db'}")
     run_id = uuid4()
     with Session(engine) as s:
         s.add(

@@ -29,7 +29,7 @@ def test_signals_command_handles_empty_db(
 ) -> None:
     monkeypatch.setenv("ALPACA_API_KEY", "k")
     monkeypatch.setenv("ALPACA_API_SECRET", "s")
-    monkeypatch.setenv("PLUTUS_DB_PATH", str(tmp_path / "x.db"))
+    monkeypatch.setenv("PLUTUS_DB_URL", f"sqlite:///{tmp_path / 'x.db'}")
     runner = CliRunner()
     result = runner.invoke(app, ["signals"])
     assert result.exit_code == 0
@@ -42,7 +42,7 @@ def test_report_command_handles_empty_db(
 ) -> None:
     monkeypatch.setenv("ALPACA_API_KEY", "k")
     monkeypatch.setenv("ALPACA_API_SECRET", "s")
-    monkeypatch.setenv("PLUTUS_DB_PATH", str(tmp_path / "x.db"))
+    monkeypatch.setenv("PLUTUS_DB_URL", f"sqlite:///{tmp_path / 'x.db'}")
     runner = CliRunner()
     result = runner.invoke(app, ["report"])
     assert result.exit_code == 0

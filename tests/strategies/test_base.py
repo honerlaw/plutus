@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 def test_recorder_writes_signal_and_skipped_order_when_submit_disabled(
     tmp_path: Path,
 ) -> None:
-    engine = init_db(tmp_path / "t.db")
+    engine = init_db(f"sqlite:///{tmp_path / 't.db'}")
     try:
         run_id = uuid4()
         with Session(engine) as s:
@@ -67,7 +67,7 @@ def test_recorder_writes_signal_and_skipped_order_when_submit_disabled(
 def test_recorder_calls_submit_and_records_alpaca_id_when_enabled(
     tmp_path: Path,
 ) -> None:
-    engine = init_db(tmp_path / "t2.db")
+    engine = init_db(f"sqlite:///{tmp_path / 't2.db'}")
     try:
         run_id = uuid4()
         with Session(engine) as s:

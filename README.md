@@ -18,43 +18,50 @@ Each runs on the same universe (`SPY, QQQ, AAPL, MSFT, NVDA, TSLA, AMD, META`) a
 
 ## Quick start
 
+Secrets are provided by [Doppler](https://doppler.com). Set up the CLI, then:
+
 ```bash
-# 1. Install deps (uv handles the venv automatically)
+# 1. Install deps
 uv sync
 
-# 2. Configure Alpaca paper credentials
-cp .env.example .env
-# edit .env — fill in ALPACA_API_KEY and ALPACA_API_SECRET from
-# https://app.alpaca.markets/paper/dashboard/overview
+# 2. Start the web server (signals + report via HTTP)
+doppler run -- uvicorn plutus.web:app --reload
+# → http://localhost:8000/strategies
+# → http://localhost:8000/signals
+# → http://localhost:8000/report
+# → http://localhost:8000/health
 
-# 3. See what's registered
-uv run plutus list
-# → donchian_swing / orb / rsi_vwap
+# 3. Start the paper trader (background worker, blocks)
+doppler run -- uv run plutus run
 
-# 4. Start the paper trader (blocks; runs the lumibot loop)
-uv run plutus run
-
-# 5. After it's collected some data, look at the signals
-uv run plutus signals                 # last 7 days
-uv run plutus report                  # per-strategy summary
-
-# 6. Or backtest one strategy against historical Alpaca bars
-uv run plutus backtest --strategy orb --start 2026-01-01 --end 2026-04-30
+# 4. Or backtest one strategy
+doppler run -- uv run plutus backtest --strategy orb \
+  --start 2026-01-01 --end 2026-04-30
 ```
 
-The SQLite file lives at `./data/plutus.db` by default (overridable via `PLUTUS_DB_PATH`).
+**Without Doppler** — export vars manually:
+
+```bash
+export ALPACA_API_KEY=...
+export ALPACA_API_SECRET=...
+export PLUTUS_DB_URL=postgresql://user:pass@localhost/plutus
+# For local SQLite: export PLUTUS_DB_URL=sqlite:///./data/plutus.db
+uv run uvicorn plutus.web:app --reload
+```
 
 ## Configuration
 
-`.env` controls runtime behaviour. The `ALPACA_PAPER` flag is **forced to `True` by the Settings validator** regardless of what you put in `.env` — paper trading is a hard invariant of this project.
+All settings arrive as environment variables (injected by Doppler in production). The `ALPACA_PAPER` flag is **forced to `True` by the Settings validator** — paper trading is a hard invariant of this project.
 
 ```
 ALPACA_API_KEY=...
 ALPACA_API_SECRET=...
+PLUTUS_DB_URL=postgresql+psycopg://user:pass@host/dbname   # psycopg3 driver — +psycopg required
 PLUTUS_SUBMIT_ORDERS=true   # false = log signals only, skip broker submission
-PLUTUS_DB_PATH=./data/plutus.db
 PLUTUS_LOG_LEVEL=INFO
 ```
+
+> **Important:** `PLUTUS_DB_URL` must use the `postgresql+psycopg://` scheme (not `postgresql://`) to route through the installed psycopg3 driver. Using `postgresql://` will fall back to psycopg2.
 
 Strategy parameters and the universe live in `configs/universe.yaml`. Disable a strategy by flipping its `enabled: true` → `false`.
 

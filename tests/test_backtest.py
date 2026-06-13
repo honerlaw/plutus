@@ -20,7 +20,7 @@ def test_run_backtest_calls_backtest_with_correct_strategy(
 ) -> None:
     monkeypatch.setenv("ALPACA_API_KEY", "k")
     monkeypatch.setenv("ALPACA_API_SECRET", "s")
-    monkeypatch.setenv("PLUTUS_DB_PATH", str(tmp_path / "bt.db"))
+    monkeypatch.setenv("PLUTUS_DB_URL", f"sqlite:///{tmp_path / 'bt.db'}")
 
     universe = tmp_path / "u.yaml"
     universe.write_text(

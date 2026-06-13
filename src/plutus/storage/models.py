@@ -32,10 +32,6 @@ class Run(SQLModel, table=True):
 class Signal(SQLModel, table=True):
     """A proposed trade emitted by a strategy."""
 
-    __table_args__ = (  # type: ignore[assignment]
-        {"sqlite_autoincrement": True},
-    )
-
     id: int | None = Field(default=None, primary_key=True)
     run_id: UUID = Field(foreign_key="run.id", index=True)
     strategy_name: str = Field(index=True)
@@ -53,10 +49,6 @@ class Signal(SQLModel, table=True):
 class Order(SQLModel, table=True):
     """Either a broker-submitted order or a skipped (DB-only) record."""
 
-    __table_args__ = (  # type: ignore[assignment]
-        {"sqlite_autoincrement": True},
-    )
-
     id: int | None = Field(default=None, primary_key=True)
     run_id: UUID = Field(foreign_key="run.id", index=True)
     signal_id: int = Field(foreign_key="signal.id", index=True)
@@ -73,7 +65,6 @@ class DailyRunSummary(SQLModel, table=True):
 
     __table_args__ = (
         UniqueConstraint("strategy_name", "trading_date", name="daily_summary_unique"),
-        {"sqlite_autoincrement": True},
     )
 
     id: int | None = Field(default=None, primary_key=True)

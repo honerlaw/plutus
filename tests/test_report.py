@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 
 def test_build_summary_counts_signals_and_fills(tmp_path: Path) -> None:
-    engine = init_db(tmp_path / "r.db")
+    engine = init_db(f"sqlite:///{tmp_path / 'r.db'}")
     try:
         run_id = uuid4()
         now = datetime.now(UTC)

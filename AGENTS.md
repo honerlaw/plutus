@@ -12,7 +12,7 @@
 ## Safety rules
 
 - This project runs against Alpaca **paper trading only**. The Alpaca client is constructed with `paper=True` in `src/plutus/broker.py` and that line must not be parameterized. CI greps for `paper=False` and fails the build if it appears anywhere in `src/`.
-- Real credentials live in `.env` (gitignored). Only `.env.example` may be committed.
+- Secrets are managed by **Doppler** — no `.env` file anywhere. In production, Doppler injects env vars. Locally, use `doppler run -- uv run ...` or export vars manually.
 - No live-trading code paths anywhere — even disabled or behind a flag.
 
 ## Code style
@@ -29,18 +29,29 @@ See `docs/superpowers/specs/2026-05-17-plutus-trading-lab-design.md` for the arc
 
 ## Running the lab
 
+Secrets are provided by Doppler. Install the [Doppler CLI](https://docs.doppler.com/docs/cli), then:
+
 ~~~bash
 uv sync
-cp .env.example .env  # fill in ALPACA_API_KEY / ALPACA_API_SECRET
-uv run plutus list                                 # see registered strategies
-uv run plutus run                                  # start the paper trader (blocks)
-uv run plutus backtest --strategy orb \
-  --start 2026-01-01 --end 2026-04-30              # backtest one strategy
-uv run plutus signals                              # see last 7 days of signals
-uv run plutus report                               # per-strategy summary
+# Option A: Doppler CLI (recommended)
+doppler run -- uv run plutus list                  # see registered strategies
+doppler run -- uvicorn plutus.web:app --reload     # start the web server (localhost:8000)
+doppler run -- uv run plutus run                   # start the paper trader (blocks)
+
+# Option B: manual export (no Doppler)
+export ALPACA_API_KEY=...
+export ALPACA_API_SECRET=...
+export PLUTUS_DB_URL=postgresql+psycopg://user:pass@localhost/plutus  # +psycopg required for psycopg3
+uv run uvicorn plutus.web:app --reload
+
+# API endpoints (once the web server is running)
+curl localhost:8000/strategies    # list strategies
+curl localhost:8000/signals       # last 7 days of signals
+curl localhost:8000/report        # per-strategy summary
+curl localhost:8000/health        # health check
 ~~~
 
-DB lives at `./data/plutus.db` by default.
+DB is PostgreSQL in production (via `PLUTUS_DB_URL`). For local dev, you can use SQLite: `export PLUTUS_DB_URL=sqlite:///./data/plutus.db`.
 
 ## minerva
 
